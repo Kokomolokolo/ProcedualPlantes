@@ -34,7 +34,7 @@ pub fn gen_planet_mesh(
             ]) as f32;
 
             
-            let amplitude = 6.0;
+            let amplitude = 2.0;
             let height_modifier= noise_value * amplitude;
 
             let final_pos = direction * (radius + height_modifier);

@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 bevy = "0.19"
 noise = "*"
+rand = "0.9"
