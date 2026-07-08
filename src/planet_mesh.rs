@@ -52,7 +52,6 @@ pub fn gen_earth_planet_mesh(
     let mut planet_mesh = Mesh::from(Sphere::new(planet_info.radius).mesh().ico(planet_info.subdivs).unwrap());
 
     let perlin = Perlin::new(planet_info.seed);
-    let continent_perlin = Perlin::new(planet_info.continent_seed);
 
     // Verticies aus dem Mesh holen
     if let Some(VertexAttributeValues::Float32x3(positions)) = 
@@ -72,9 +71,6 @@ pub fn gen_earth_planet_mesh(
             let height_noise = perlin.get([
                 frequenzy * direction.x as f64, frequenzy * direction.y as f64, frequenzy * direction.z as f64
             ]) as f32;
-
-            let continent_value = continent_perlin.get([direction.x as f64, direction.y as f64, direction.z as f64]);
-
             
             let amplitude = planet_info.amplitude;
             let height_modifier= height_noise * amplitude;
@@ -107,12 +103,8 @@ pub fn gen_earth_planet_mesh(
                 let factor = (t - 0.82) / (1.0 - 0.82);
                 mountain.lerp(snow, factor)
             };
-            println!("{}", continent_value);
-            if continent_value > 0.0{
-                colors.push(deep_sea.to_f32_array());
-            } else {
-                colors.push(color.to_f32_array());
-            }
+            
+            colors.push(color.to_f32_array());
 
 
         }

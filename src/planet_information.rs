@@ -39,7 +39,7 @@ impl Default for PlanetInfo {
             subdivs: 18,
             planet_type: PlanetType::Earth,
             amplitude: 3.0,
-            frequency: 10.0,
+            frequency: 3.0,
             continent_seed: 84,
         }
     }

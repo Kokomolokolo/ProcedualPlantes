@@ -16,7 +16,7 @@ pub fn setup_galaxy(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let types = vec!(PlanetType::Desert, PlanetType::Ice, PlanetType::Earth, PlanetType::Lava);
+    let types = vec!(PlanetType::Earth, PlanetType::Ice, PlanetType::Desert, PlanetType::Lava);
     for i in 0..4 {
         let seed = 42 + i;
 
