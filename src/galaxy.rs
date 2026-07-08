@@ -1,7 +1,7 @@
 use bevy::{asset::RenderAssetUsages, prelude::*, transform::commands};
 use rand::Rng;
 
-use crate::{planet_information::PlanetInfo, planet_mesh::{gen_earth_planet_mesh, gen_planet_mesh}};
+use crate::{planet_information::PlanetInfo, planet_mesh::{gen_earth_planet_mesh, gen_planet_mesh}, planet_types::PlanetType};
 
 pub struct GalaxyPlugin;
 
@@ -16,12 +16,15 @@ pub fn setup_galaxy(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    for i in 0..5 {
+    let types = vec!(PlanetType::Desert, PlanetType::Ice, PlanetType::Earth, PlanetType::Lava);
+    for i in 0..4 {
         let seed = 42 + i;
 
-        let planet_mesh = gen_earth_mesh(
+        let planet_mesh = gen_planet_mesh(
             PlanetInfo {
                 seed,
+                planet_type: types[i as usize],
+                // radius: 50.,
                 ..default()
             }
         );
@@ -32,7 +35,7 @@ pub fn setup_galaxy(
                 perceptual_roughness: 0.8,
                 ..default()
             })),
-            Transform::from_xyz(i as f32 * 100., 0.0, 0.0),
+            Transform::from_xyz(i as f32 * 100., 0.0, -50.0),
         ));
     }
     // Licht

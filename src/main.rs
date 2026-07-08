@@ -4,6 +4,8 @@ mod planet_mesh;
 mod camera;
 mod galaxy;
 mod planet_information;
+mod planet_types;
+mod planet_surface;
 
 use crate::camera::CameraPlugin;
 use crate::galaxy::GalaxyPlugin;
