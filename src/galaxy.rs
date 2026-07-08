@@ -1,7 +1,7 @@
 use bevy::{asset::RenderAssetUsages, prelude::*, transform::commands};
 use rand::Rng;
 
-use crate::planet_mesh::gen_planet_mesh;
+use crate::{planet_information::PlanetInfo, planet_mesh::{gen_earth_planet_mesh, gen_planet_mesh}};
 
 pub struct GalaxyPlugin;
 
@@ -19,7 +19,12 @@ pub fn setup_galaxy(
     for i in 0..5 {
         let seed = 42 + i;
 
-        let planet_mesh = gen_planet_mesh(20.0, 20, seed);
+        let planet_mesh = gen_earth_mesh(
+            PlanetInfo {
+                seed,
+                ..default()
+            }
+        );
 
         commands.spawn((
             Mesh3d(meshes.add(planet_mesh)),
@@ -52,7 +57,7 @@ fn setup_stars(
         let theta = rng.random_range(0.0..std::f32::consts::TAU);
         let phi = rng.random_range(0.0..std::f32::consts::PI);
 
-        let radius = 1000.;
+        let radius = 500.;
 
         let x = radius * phi.sin() * theta.cos();
         let y = radius * phi.sin() * theta.sin();
@@ -66,7 +71,7 @@ fn setup_stars(
 
     let star_material = materials.add(StandardMaterial {
         base_color: Color::WHITE,
-        emissive: LinearRgba::WHITE * 2.0,
+        emissive: LinearRgba::WHITE * 3.0,
         unlit: true,
         ..default()
     });

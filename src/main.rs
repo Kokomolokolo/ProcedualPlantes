@@ -1,10 +1,9 @@
-use bevy::math::VectorSpace;
 use bevy::{prelude::*};
-use bevy::render::mesh::{Indices, PrimitiveTopology, VertexAttributeValues};
 
 mod planet_mesh;
 mod camera;
 mod galaxy;
+mod planet_information;
 
 use crate::camera::CameraPlugin;
 use crate::galaxy::GalaxyPlugin;
