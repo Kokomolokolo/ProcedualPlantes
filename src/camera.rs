@@ -25,7 +25,7 @@ pub struct FpsCamera {
 impl Default for FpsCamera {
     fn default() -> Self {
         Self {
-            speed: 10.0,
+            speed: 50.0,
             sensitivity: 0.001,
         }
     }

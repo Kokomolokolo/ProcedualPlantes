@@ -36,7 +36,7 @@ pub fn calculate_surface(
             let detail = (detail_noise as f32 + 1.0) / 2.0;
 
             let amplitude = planet_info.amplitude;
-            let height_modifier= height_noise * amplitude;
+            let mut height_modifier= height_noise * amplitude;
             
             // Farben auf den Planeten basierend auf der Höhe:
             let deep_sea = LinearRgba::new(0.05, 0.15, 0.45, 1.0);
@@ -54,26 +54,112 @@ pub fn calculate_surface(
                 let factor = (t - 0.3) / (0.45 - 0.3);
                 shallow_water.lerp(sand, factor)
             } else if t < 0.5 {
+                height_modifier += detail_noise as f32 * 1.3;
                 let factor = (t-0.45) / (0.50 - 0.45);
                 sand.lerp(grass, factor)
             } else if t < 0.75 {
                 let factor = (t - 0.50) / (0.75 - 0.50);
+                height_modifier += detail_noise as f32 * 1.5;
                 grass.lerp(mountain, factor)
             } else {
                 let factor = (t - 0.75) / (1.0 - 0.75);
+                height_modifier += detail_noise.abs() as f32 * 3.0;
                 mountain.lerp(snow, factor)
             };
 
             SurfacePoint { height_modifier, color }
         }
         PlanetType::Desert => {
-            SurfacePoint { height_modifier: 1.0, color: LinearRgba { red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0 } }
+            // Noise Wert:
+            let frequenzy = planet_info.frequency as f64;
+            let height_noise = base_seed.get([
+                frequenzy * dir.x as f64, frequenzy * dir.y as f64, frequenzy * dir.z as f64
+            ]) as f32;
+
+            let continent_noise = continent_seed.get([
+                planet_info.continent_freq * dir.x as f64, planet_info.continent_freq * dir.y as f64, planet_info.continent_freq * dir.z as f64
+            ]);
+
+            let detail_noise = detail_seed.get([
+                7. * dir.x as f64, 7. * dir.y as f64, 7. * dir.z as f64
+            ]);
+
+            let continent = (continent_noise + 1.0) / 2.0;
+            let mountains = (height_noise + 1.0) / 2.0;
+            let detail = (detail_noise as f32 + 1.0) / 2.0;
+
+            let amplitude = planet_info.amplitude;
+            let mut height_modifier= height_noise * amplitude;
+            
+            // Farben auf den Planeten basierend auf der Höhe:
+            let base_sand = LinearRgba::new(0.76, 0.58, 0.38, 1.0);
+            let dunes = LinearRgba::new(0.45, 0.58, 0.38, 1.0);
+            let mountains = LinearRgba::new(0.27, 0.11, 0.08, 1.0);
+
+            
+            let t = (height_noise + 1.0) / 2.0; // Ändert den Noise Wert auf Bereich zwischen 0 und 1
+
+            let color = if t < 0.5 {
+                base_sand.lerp(dunes, t / 0.5)
+            } else {
+                let factor = (t - 0.5) / (1.0 - 0.5);
+                height_modifier += detail_noise as f32 * 2.0;
+                dunes.lerp(mountains, factor)
+            };
+
+            SurfacePoint { height_modifier, color }
         }
         PlanetType::Ice => {
             SurfacePoint { height_modifier: 1.0, color: LinearRgba { red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0 } }
         }
         PlanetType::Lava => {
-            SurfacePoint { height_modifier: 1.0, color: LinearRgba { red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0 } }
+            // Noise Wert:
+            let frequenzy = planet_info.frequency as f64;
+            let height_noise = base_seed.get([
+                frequenzy * dir.x as f64, frequenzy * dir.y as f64, frequenzy * dir.z as f64
+            ]) as f32;
+
+            let continent_noise = continent_seed.get([
+                planet_info.continent_freq * dir.x as f64, planet_info.continent_freq * dir.y as f64, planet_info.continent_freq * dir.z as f64
+            ]);
+
+            let detail_noise = detail_seed.get([
+                7. * dir.x as f64, 7. * dir.y as f64, 7. * dir.z as f64
+            ]);
+
+            let continent = (continent_noise + 1.0) / 2.0;
+            let mountains = (height_noise + 1.0) / 2.0;
+            let detail = (detail_noise as f32 + 1.0) / 2.0;
+
+            let amplitude = planet_info.amplitude;
+            let mut height_modifier= height_noise * amplitude;
+            
+            // Farben auf den Planeten basierend auf der Höhe:
+            let deep_lava = LinearRgba::new(1.0, 0.35, 0.0, 1.0);
+            let dark_rock = LinearRgba::new(0.9, 0.05, 0.0, 1.0);
+            let burnt_ground = LinearRgba::new(0.18, 0.04, 0.02, 1.0);
+            let mountains = LinearRgba::new(0.32, 0.1, 0.08, 1.0);
+            let red = LinearRgba::new(1.0, 0.0, 0.0, 1.0);
+
+            
+            let t = (height_noise + 1.0) / 2.0; // Ändert den Noise Wert auf Bereich zwischen 0 und 1
+
+            let color = if t < 0.4 {
+                deep_lava.lerp(dark_rock, t / 0.4)
+            } else if t < 0.55 {
+                let factor = (t - 0.4) / (0.55 - 0.4);
+                dark_rock.lerp(burnt_ground, factor)
+            } else if t < 0.75 {
+                height_modifier += detail_noise as f32 * 1.3;
+                let factor = (t-0.55) / (0.75 - 0.55);
+                burnt_ground.lerp(mountains, factor)
+            } else {
+                let factor = (t - 0.75) / (1.0 - 0.75);
+                height_modifier += detail_noise.abs() as f32 * 3.0;
+                mountains.lerp(red, factor)
+            };
+
+            SurfacePoint { height_modifier, color }
         }
     }
 }

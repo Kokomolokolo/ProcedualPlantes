@@ -1,5 +1,5 @@
 use bevy::{asset::RenderAssetUsages, prelude::*};
-use rand::Rng;
+use rand::{Rng, rng};
 
 use crate::{planet_information::PlanetInfo, planet_mesh::gen_planet_mesh, planet_types::PlanetType};
 
@@ -16,8 +16,30 @@ pub fn setup_galaxy(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let types = vec!(PlanetType::Earth, PlanetType::Ice, PlanetType::Desert, PlanetType::Lava);
-    for i in 0..4 {
+    let types = vec!(PlanetType::Earth, PlanetType::Lava, PlanetType::Desert, PlanetType::Ice);
+    for i in 0..3 {
+        for j in 0..3 {
+            let seed = 42 + i;
+    
+            let planet_mesh = gen_planet_mesh(
+                PlanetInfo {
+                    seed,
+                    planet_type: types[rng().random_range(0..4)],
+                    subdivs: 50,
+                    // radius: 50.,
+                    ..default()
+                }
+            );
+    
+            commands.spawn((
+                Mesh3d(meshes.add(planet_mesh)),
+                MeshMaterial3d(materials.add(StandardMaterial {
+                    perceptual_roughness: 0.8,
+                    ..default()
+                })),
+                Transform::from_xyz(i as f32 * 100., 200.0, j as f32 * 100.),
+            ));
+        }
         let seed = 42 + i;
 
         let planet_mesh = gen_planet_mesh(
@@ -36,7 +58,7 @@ pub fn setup_galaxy(
                 perceptual_roughness: 0.8,
                 ..default()
             })),
-            Transform::from_xyz(i as f32 * 100., 0.0, -50.0),
+            Transform::from_xyz(i as f32 * 100., 0.0, 0.),
         ));
     }
     // Licht
@@ -44,6 +66,12 @@ pub fn setup_galaxy(
         DirectionalLight::default(),
         Transform::from_xyz(40.0, 80.0, 40.0).looking_at(Vec3::ZERO, Vec3::Y),
     ));
+    
+    commands.spawn(AmbientLight { // Macht das überhaupt was?
+        color: Color::WHITE,
+        brightness: 1000.0,
+        ..default()
+    });
 }
 
 fn setup_stars(
@@ -53,7 +81,7 @@ fn setup_stars(
 ) {
     let mut rng = rand::rng();
 
-    let star_count = 2000;
+    let star_count = 3000;
     let mut postions = Vec::new();
 
     for _ in 0..star_count {
@@ -61,7 +89,7 @@ fn setup_stars(
         let theta = rng.random_range(0.0..std::f32::consts::TAU);
         let phi = rng.random_range(0.0..std::f32::consts::PI);
 
-        let radius = 500.;
+        let radius = 5000.;
 
         let x = radius * phi.sin() * theta.cos();
         let y = radius * phi.sin() * theta.sin();
