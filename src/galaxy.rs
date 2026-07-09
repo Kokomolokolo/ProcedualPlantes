@@ -1,7 +1,7 @@
-use bevy::{asset::RenderAssetUsages, prelude::*, transform::commands};
+use bevy::{asset::RenderAssetUsages, prelude::*};
 use rand::Rng;
 
-use crate::{planet_information::PlanetInfo, planet_mesh::{gen_earth_planet_mesh, gen_planet_mesh}, planet_types::PlanetType};
+use crate::{planet_information::PlanetInfo, planet_mesh::gen_planet_mesh, planet_types::PlanetType};
 
 pub struct GalaxyPlugin;
 
@@ -24,6 +24,7 @@ pub fn setup_galaxy(
             PlanetInfo {
                 seed,
                 planet_type: types[i as usize],
+                subdivs: 50,
                 // radius: 50.,
                 ..default()
             }

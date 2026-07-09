@@ -9,16 +9,32 @@ pub struct SurfacePoint {
     pub color: LinearRgba,
 }
 
-pub fn calculate_surface(planet_type: PlanetType, direction: Vec3, perlin: &Perlin, planet_info: &PlanetInfo) -> SurfacePoint {
+pub fn calculate_surface(
+    planet_type: PlanetType, dir: Vec3, 
+    base_seed: &Perlin, continent_seed: &Perlin, detail_seed: &Perlin, 
+    planet_info: &PlanetInfo
+) -> SurfacePoint {
     // Surface generierung basierend auf dem Planetentyp
     match planet_type {
         PlanetType::Earth => {
             // Noise Wert:
             let frequenzy = planet_info.frequency as f64;
-            let height_noise = perlin.get([
-                frequenzy * direction.x as f64, frequenzy * direction.y as f64, frequenzy * direction.z as f64
+            let height_noise = base_seed.get([
+                frequenzy * dir.x as f64, frequenzy * dir.y as f64, frequenzy * dir.z as f64
             ]) as f32;
-            
+
+            let continent_noise = continent_seed.get([
+                planet_info.continent_freq * dir.x as f64, planet_info.continent_freq * dir.y as f64, planet_info.continent_freq * dir.z as f64
+            ]);
+
+            let detail_noise = detail_seed.get([
+                7. * dir.x as f64, 7. * dir.y as f64, 7. * dir.z as f64
+            ]);
+
+            let continent = (continent_noise + 1.0) / 2.0;
+            let mountains = (height_noise + 1.0) / 2.0;
+            let detail = (detail_noise as f32 + 1.0) / 2.0;
+
             let amplitude = planet_info.amplitude;
             let height_modifier= height_noise * amplitude;
             
