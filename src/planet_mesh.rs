@@ -9,7 +9,7 @@ use crate::{planet_information::PlanetInfo, planet_surface::calculate_surface};
 pub fn gen_planet_mesh(
     planet_info: PlanetInfo
 ) -> Mesh {
-    let mut planet_mesh = Mesh::from(Sphere::new(planet_info.radius).mesh().ico(planet_info.subdivs).unwrap());
+    let mut planet_mesh = Mesh::from(Sphere::new(planet_info.radius).mesh().ico(70).unwrap());
 
     let base_seed = Perlin::new(planet_info.seed);
     let continent_seed = Perlin::new(planet_info.continent_seed);
@@ -41,6 +41,8 @@ pub fn gen_planet_mesh(
         planet_mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, new_positions);
         planet_mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
     }
+    //planet_mesh.duplicate_vertices(); 
+    //planet_mesh.compute_flat_normals(); // Berechnet die Licht-Normalen für die neuen Berge
     
     planet_mesh
 }

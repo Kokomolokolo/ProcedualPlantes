@@ -1,7 +1,7 @@
 use bevy::{asset::RenderAssetUsages, prelude::*};
 use rand::{Rng, rng};
 
-use crate::{planet_information::PlanetInfo, planet_mesh::gen_planet_mesh, planet_types::PlanetType};
+use crate::{planet_information::PlanetInfo, planet_mesh::{self, gen_planet_mesh}, planet_types::PlanetType};
 
 pub struct GalaxyPlugin;
 
@@ -17,29 +17,7 @@ pub fn setup_galaxy(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let types = vec!(PlanetType::Earth, PlanetType::Lava, PlanetType::Desert, PlanetType::Ice);
-    for i in 0..3 {
-        for j in 0..3 {
-            let seed = 42 + i;
-    
-            let planet_mesh = gen_planet_mesh(
-                PlanetInfo {
-                    seed,
-                    planet_type: types[rng().random_range(0..4)],
-                    subdivs: 50,
-                    // radius: 50.,
-                    ..default()
-                }
-            );
-    
-            commands.spawn((
-                Mesh3d(meshes.add(planet_mesh)),
-                MeshMaterial3d(materials.add(StandardMaterial {
-                    perceptual_roughness: 0.8,
-                    ..default()
-                })),
-                Transform::from_xyz(i as f32 * 100., 200.0, j as f32 * 100.),
-            ));
-        }
+    for i in 0..4 {
         let seed = 42 + i;
 
         let planet_mesh = gen_planet_mesh(
@@ -60,6 +38,30 @@ pub fn setup_galaxy(
             })),
             Transform::from_xyz(i as f32 * 100., 0.0, 0.),
         ));
+    }
+    for x in -50..50 {
+        for z in -50..50 {
+            let random_spawn: f32 = rng().random();
+            if random_spawn > 0.999 {
+                let mut rng = rand::rng();
+                let seed: u32 = rng.random();
+                
+                let planet_mesh = gen_planet_mesh(PlanetInfo {
+                    seed,
+                    planet_type: types[rng.random_range(0..types.len())],
+                    ..default()
+                });
+
+                commands.spawn((
+                    Mesh3d(meshes.add(planet_mesh)),
+                    MeshMaterial3d(materials.add(StandardMaterial {
+                        perceptual_roughness: 0.8,
+                        ..default()
+                    })),
+                    Transform::from_xyz(x as f32 * 10., 0.0, z as f32 * 10.)
+                ));
+            }
+        }
     }
     // Licht
     commands.spawn((
