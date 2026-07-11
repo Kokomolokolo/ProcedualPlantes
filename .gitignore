@@ -1,2 +1,3 @@
 /target
 build_for_wasm.sh
+out

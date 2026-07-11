@@ -1,7 +1,7 @@
 use bevy::{asset::RenderAssetUsages, prelude::*};
-use rand::{Rng, rng};
+use fastrand::Rng;
 
-use crate::{planet_information::PlanetInfo, planet_mesh::{self, gen_planet_mesh}, planet_types::PlanetType};
+use crate::{planet_information::PlanetInfo, planet_mesh::{gen_planet_mesh}, planet_types::PlanetType};
 
 pub struct GalaxyPlugin;
 
@@ -41,14 +41,13 @@ pub fn setup_galaxy(
     }
     for x in -50..50 {
         for z in -50..50 {
-            let random_spawn: f32 = rng().random();
+            let random_spawn: f32 = fastrand::f32();
             if random_spawn > 0.999 {
-                let mut rng = rand::rng();
-                let seed: u32 = rng.random();
+                let seed: u32 = fastrand::u32(..100);
                 
                 let planet_mesh = gen_planet_mesh(PlanetInfo {
                     seed,
-                    planet_type: types[rng.random_range(0..types.len())],
+                    planet_type: types[fastrand::usize(..types.len())],
                     ..default()
                 });
 
@@ -81,15 +80,13 @@ fn setup_stars(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let mut rng = rand::rng();
-
     let star_count = 3000;
     let mut postions = Vec::new();
 
     for _ in 0..star_count {
         // Zufällige Richtung im Kreis generieren
-        let theta = rng.random_range(0.0..std::f32::consts::TAU);
-        let phi = rng.random_range(0.0..std::f32::consts::PI);
+        let theta = fastrand::f32() * (std::f32::consts::TAU);
+        let phi = fastrand::f32() * (std::f32::consts::PI);
 
         let radius = 5000.;
 
