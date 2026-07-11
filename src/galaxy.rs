@@ -8,8 +8,11 @@ pub struct GalaxyPlugin;
 impl Plugin for GalaxyPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, (setup_galaxy, setup_stars));
+        app.add_systems(FixedUpdate, rotate_planets);
     }
 }
+#[derive(Component)]
+pub struct Planet;
 
 pub fn setup_galaxy(
     mut commands: Commands,
@@ -37,6 +40,7 @@ pub fn setup_galaxy(
                 ..default()
             })),
             Transform::from_xyz(i as f32 * 100., 0.0, 0.),
+            Planet,
         ));
     }
     for x in -50..50 {
@@ -57,7 +61,8 @@ pub fn setup_galaxy(
                         perceptual_roughness: 0.8,
                         ..default()
                     })),
-                    Transform::from_xyz(x as f32 * 10., 0.0, z as f32 * 10.)
+                    Transform::from_xyz(x as f32 * 10., 0.0, z as f32 * 10.),
+                    Planet
                 ));
             }
         }
@@ -75,6 +80,18 @@ pub fn setup_galaxy(
     });
 }
 
+// Planetenrotation
+fn rotate_planets(
+    mut planet_query: Query<&mut Transform, With<Planet>>,
+    time: Res<Time>,
+) {
+    for mut transform in planet_query {
+        transform.rotate_local_x(time.delta_secs() * 0.05);
+    }
+}
+// ======================
+// Stars
+// ======================
 fn setup_stars(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
